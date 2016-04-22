@@ -10,7 +10,10 @@ from .models import (
 )
 
 
-
+## TODO: CRONJOB FOR PREPAREDATA
+## TODO: INSTALL POSTGIS IN CONTAINER
+## TODO: ADD LOGIC TO CHOOSE TIMESTAMP AND LINE
+## TODO: BETTER STYLING
 
 @view_config(route_name='home', renderer='templates/index.pt')
 def home(request):

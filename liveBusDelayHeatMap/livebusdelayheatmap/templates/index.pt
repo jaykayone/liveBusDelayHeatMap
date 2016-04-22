@@ -67,7 +67,7 @@
       new ol.layer.Heatmap({
               title: 'added Layer',
               weight:'return delay/10',
-              opacity: 0,
+              opacity: 0.3,
               source: new ol.source.Vector({
                  projection : 'EPSG:3857',
                  url: '/latest',

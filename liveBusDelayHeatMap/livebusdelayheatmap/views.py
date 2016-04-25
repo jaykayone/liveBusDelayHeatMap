@@ -53,7 +53,7 @@ def timestamps(request):
             out.append(t[0].isoformat())
     except DBAPIError:
         return Response("a problem occured", content_type='text/plain', status_int=500)
-    return {'timestamps': out}
+    return {'timestamps': sorted(out)}
     
 @view_config(route_name='latest', renderer='geojson')
 def latest(request):

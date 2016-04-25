@@ -11,7 +11,7 @@ import fiona
 from sqlalchemy.orm import sessionmaker
 from requests_futures.sessions import FuturesSession
 from concurrent.futures import ThreadPoolExecutor
-
+from ConfigParser import SafeConfigParser
 
 
 class BusStopDelay:
@@ -35,7 +35,9 @@ class BusStopDelay:
 
 class DataPreparer:
     def __init__(self,init=True):
-        engine = create_engine('postgresql://bus:map@192.168.99.100/busmap')#, echo=True)
+        parser = SafeConfigParser()
+        parser.read('../production.ini')
+        engine = create_engine(parser.get('app:main', 'sqlalchemy.url'))#, echo=True)
         self.Session = sessionmaker(bind=engine)
         self.busStopArray = {}
         self.__get_bus_stops()
@@ -192,10 +194,15 @@ if __name__ == "__main__":
     #import sys
     #print(sys.version)
     #print sorted(["%s==%s" % (i.key, i.version) for i in pip.get_installed_distributions()])
-    dp = DataPreparer(init=False)
-
-    dp.compute_delays_async(shortlist=True)
-
+    dp = None
+    #FULL DB UPDATE == TRUE?
+    if sys.argv[1] == True:
+        dp = DataPreparer(init=True)
+        dp.compute_delays_async(shortlist=False)
+    #FULL DB UPDATE == FALSE
+    else:
+        dp = DataPreparer(init=False)
+        dp.compute_delays_async(shortlist=True)
     d = dp.get_delays_dict()
     c = 0
     for id in d:

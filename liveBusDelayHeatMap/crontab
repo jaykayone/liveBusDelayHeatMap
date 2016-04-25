@@ -1,0 +1,2 @@
+0        *  *   *   *     root /app/getDelayData_full.sh > /dev/stdout
+5-55/5   *  *   *   *     root /app/getDelayData_incremental.sh > /dev/stdout

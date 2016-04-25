@@ -59,7 +59,10 @@ def timestamps(request):
 def latest(request):
     try:
         latest_time = DBSession.query(BusDelay).order_by(BusDelay.time.desc()).first()
-        delays = DBSession.query(BusDelay).filter(BusDelay.time == latest_time.time).all()
+        if latest_time:
+            delays = DBSession.query(BusDelay).filter(BusDelay.time == latest_time.time).all()
+        else:
+            delays = {}
 
     except DBAPIError:
         return Response("a problem occured", content_type='text/plain', status_int=500)

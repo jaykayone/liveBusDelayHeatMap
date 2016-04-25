@@ -14,7 +14,13 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
     config = Configurator(settings=settings)
-
+    
+    try:
+        #create the tables if they do not yet exist
+        Base.metadata.create_all(engine)
+    pass:
+        pass
+    
     config.add_renderer('geojson', GeoJSON())
     config.include('pyramid_chameleon')
     config.add_static_view('static', 'static', cache_max_age=3600)

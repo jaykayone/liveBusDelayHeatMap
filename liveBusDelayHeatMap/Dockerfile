@@ -12,6 +12,7 @@ RUN git clone https://github.com/jaykayone/liveBusDelayHeatMap.git
 COPY app.wsgi /app/app.wsgi
 COPY getDelayData_full.sh /app/getDelayData_full.sh
 COPY getDelayData_incremental.sh /app/getDelayData_incremental.sh
+RUN /bin/bash -c "chmod o+x *.sh"
 RUN /bin/bash -c "source ${appdir}/env/bin/activate && pip install -r ${appdir}/liveBusDelayHeatMap/liveBusDelayHeatMap/requirements.txt"
 RUN /bin/bash -c "source ${appdir}/env/bin/activate && cd ${appdir}/liveBusDelayHeatMap/liveBusDelayHeatMap && python setup.py install"
 COPY production.ini ${appdir}/liveBusDelayHeatMap/liveBusDelayHeatMap/production.ini

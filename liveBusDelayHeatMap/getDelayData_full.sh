@@ -1,2 +1,3 @@
 #!/bin/bash
-/app/env/bin/python /app/liveBusDelayHeatMap/liveBusDelayHeatMap/livebusdelayheatmap/prepareData.py /app/liveBusDelayHeatMap/liveBusDelayHeatMap/production.ini True
+cd /app/liveBusDelayHeatMap/liveBusDelayHeatMap/livebusdelayheatmap
+/app/env/bin/python prepareData.py ../production.ini True

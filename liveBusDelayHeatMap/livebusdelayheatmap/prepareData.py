@@ -34,9 +34,9 @@ class BusStopDelay:
 
 
 class DataPreparer:
-    def __init__(self,init=True):
+    def __init__(self, init=True, config_file='../production.ini'):
         parser = SafeConfigParser()
-        parser.read('../production.ini')
+        parser.read(config_file)
         engine = create_engine(parser.get('app:main', 'sqlalchemy.url'))#, echo=True)
         self.Session = sessionmaker(bind=engine)
         self.busStopArray = {}
@@ -195,13 +195,17 @@ if __name__ == "__main__":
     #print(sys.version)
     #print sorted(["%s==%s" % (i.key, i.version) for i in pip.get_installed_distributions()])
     dp = None
-    #FULL DB UPDATE == TRUE?
-    if sys.argv[1] == True:
-        dp = DataPreparer(init=True)
+
+    _config_file = '../production.ini'
+    if sys.argv[1]:
+        config_file = sys.argv[1]
+    # FULL DB UPDATE == TRUE?
+    if sys.argv[2] == 'True':
+        dp = DataPreparer(init=True, config_file=_config_file)
         dp.compute_delays_async(shortlist=False)
-    #FULL DB UPDATE == FALSE
+    # FULL DB UPDATE == FALSE
     else:
-        dp = DataPreparer(init=False)
+        dp = DataPreparer(init=False, config_file=_config_file)
         dp.compute_delays_async(shortlist=True)
     d = dp.get_delays_dict()
     c = 0

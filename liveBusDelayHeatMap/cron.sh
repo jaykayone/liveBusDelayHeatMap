@@ -1,2 +1,2 @@
 #!/bin/sh
-killall cron && /usr/sbin/cron -f
+/usr/sbin/cron -f

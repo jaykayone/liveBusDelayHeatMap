@@ -13,9 +13,10 @@ from .models import (
 )
 
 
-## TODO: CRONJOB FOR PREPAREDATA (SIDEKICK?)
-## TODO: BETTER STYLING
 
+## TODO: BETTER STYLING
+## TODO: timestamp formatting
+## TODO: Add UI for LINE AND TIME
 ## TODO: LOG TO CONTAINER
 
 @view_config(route_name='home', renderer='templates/index.pt')

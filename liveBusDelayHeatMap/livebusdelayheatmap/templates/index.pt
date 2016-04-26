@@ -28,12 +28,9 @@
         var projection = ol.proj.get('EPSG:3857');
         var projectionExtent =  [300000,6000000,1000000,6700000];
         var map = new ol.Map({
-            controls: ol.control.defaults({
-            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-            collapsible: false
-            })
-            }),
         target: 'map',
+        loadTilesWhileAnimating: true,
+        loadTilesWhileInteracting: true,
         layers: [
 
        

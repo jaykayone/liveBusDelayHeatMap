@@ -1,12 +1,36 @@
+busmap-cron:
+  log_driver: ''
+  labels:
+    io.rancher.container.pull_image: always
+  tty: true
+  entrypoint:
+  - /app/cron.sh
+  log_opt: {}
+  image: jaykayone/busmap
+  links:
+  - 'postgis:'
+  stdin_open: true
 postgis:
-  image: mdillon/postgis:9.5
-  ports:
-    - "5432:5432"
-  volumes:
-    - "/var/lib/postgresql/data:/pg_data"
   environment:
-    - POSTGRES_PASSWORD=mysecretpassword
-webapp:
-  image: jaykayone/busdelaymap
+    POSTGRES_PASSWORD: xxxx
+  log_driver: ''
+  labels:
+    io.rancher.container.pull_image: always
+  tty: true
+  log_opt: {}
+  image: jaykayone/busmap_pg
+  volumes:
+  - /pg_data_bus/:/var/lib/postgresql/data
+  stdin_open: true
+busmap:
   ports:
-    - "80:80"
+  - 8081:80/tcp
+  log_driver: ''
+  labels:
+    io.rancher.container.pull_image: always
+  tty: true
+  log_opt: {}
+  image: jaykayone/busmap
+  links:
+  - 'postgis:'
+  stdin_open: true

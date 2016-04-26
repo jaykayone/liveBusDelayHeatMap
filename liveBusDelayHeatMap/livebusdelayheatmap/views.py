@@ -1,6 +1,5 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-from datetime import datetime
 import dateutil.parser
 
 from sqlalchemy.exc import DBAPIError
@@ -8,8 +7,7 @@ from sqlalchemy import and_
 
 from .models import (
     DBSession,
-    BusDelay,
-    Station
+    BusDelay
 )
 
 
@@ -21,7 +19,9 @@ from .models import (
 
 @view_config(route_name='home', renderer='templates/index.pt')
 def home(request):
-    return {}
+    return {'timestamps': timestamps(None),
+            'lines': lines_for_timestamp(None),
+            'a': 'a'}
 
 
 @view_config(route_name='data_for_timestamp', renderer='geojson')
@@ -84,9 +84,14 @@ def latest_for_line(request):
 @view_config(route_name='lines_for_timestamp', renderer='json')
 def lines_for_timestamp(request):
     try:
-        d = dateutil.parser.parse(request['date'])
-        lines = DBSession.query(BusDelay).filter(BusDelay.time == d).group_by(BusDelay.line).all()
-
+        try:
+            d = dateutil.parser.parse(request.params['datetime'])
+        except:
+            d = DBSession.query(BusDelay).order_by(BusDelay.time.desc()).first().time
+        lines = DBSession.query(BusDelay.line).filter(BusDelay.time == d).group_by(BusDelay.line).all()
+        output=[]
+        for l in lines:
+            output.append(l[0])
     except DBAPIError:
         return Response("a problem occured", content_type='text/plain', status_int=500)
-    return {'lines': lines}
+    return {'lines': sorted(output, key=int)}

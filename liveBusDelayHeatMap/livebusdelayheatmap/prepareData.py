@@ -1,13 +1,12 @@
 import requests
-import sys,os
+import sys
 import datetime
 
 from shapely.geometry import Point
-from shapely.geometry import mapping
+
 from geoalchemy2.shape import from_shape
 from sqlalchemy import create_engine
 from models import BusDelay, Station
-import fiona
 from sqlalchemy.orm import sessionmaker
 from requests_futures.sessions import FuturesSession
 from concurrent.futures import ThreadPoolExecutor
@@ -15,7 +14,7 @@ from ConfigParser import SafeConfigParser
 
 
 class BusStopDelay:
-    def __init__(self,id,name,geom):
+    def __init__(self, id, name, geom):
         self.id = id
         self.name = name
         self.geom = geom
@@ -155,25 +154,6 @@ class DataPreparer:
             if k == 0:
                 del self.busStopArray[id]
 
-    def write_to_shp(self):
-        schema = {
-            'geometry': 'Point',
-            'properties': {'id': 'int', 'name': 'str','line': 'str', 'delay': 'int', 'time': 'datetime'},
-        }
-        with fiona.open('/tmp/delays.shp', 'w', 'ESRI Shapefile', schema) as c:
-            for id in self.busStopArray:
-                f = self.busStopArray[id]
-                for d in f.delays:
-                    c.write({
-                        'geometry': mapping(f.geom),
-                        'properties': {'id': f.id,
-                                       'name': f.name,
-                                       'line': d[0],
-                                       'delay': d[1],
-                                       'time': self.latestUpdateStartTime
-                                       }
-                                       })
-
     def write_to_postgis(self):
         session = self.Session()
         for id in self.busStopArray:
@@ -191,9 +171,6 @@ class DataPreparer:
 
 
 if __name__ == "__main__":
-    #import sys
-    #print(sys.version)
-    #print sorted(["%s==%s" % (i.key, i.version) for i in pip.get_installed_distributions()])
     dp = None
 
     _config_file = '../production.ini'
@@ -214,6 +191,5 @@ if __name__ == "__main__":
                 for delay in f.delays:
                     c+=1
     print c
-    #dp.write_to_shp()
+
     dp.write_to_postgis()
-    #dp.write_to_spatialite()

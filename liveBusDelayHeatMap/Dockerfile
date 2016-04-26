@@ -11,6 +11,8 @@ RUN /bin/bash -c "source ${appdir}/env/bin/activate && pip install --upgrade pip
 COPY app.wsgi /app/app.wsgi
 COPY getDelayData_full.sh /app/getDelayData_full.sh
 COPY getDelayData_incremental.sh /app/getDelayData_incremental.sh
+COPY cron.sh /app/cron.sh
+COPY startup.sh /app/startup.sh
 RUN /bin/bash -c "chmod o+x *.sh"
 RUN git clone https://github.com/jaykayone/liveBusDelayHeatMap.git
 RUN /bin/bash -c "source ${appdir}/env/bin/activate && pip install -r ${appdir}/liveBusDelayHeatMap/liveBusDelayHeatMap/requirements.txt"
@@ -21,5 +23,5 @@ COPY crontab /app/crontab
 RUN cat crontab >> /etc/crontab
 
 #DEFINE ENTRYPOINT
-ENTRYPOINT mod_wsgi-docker-start ${appdir}/app.wsgi --user=www-data --group=root --python-path=${appdir}/env/lib/python2.7/site-packages/
+ENTRYPOINT /app/startup.sh
 EXPOSE 80

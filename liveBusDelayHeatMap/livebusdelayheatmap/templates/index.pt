@@ -23,8 +23,9 @@
   </head>
   <body>
         <div style="height:50px;text-align:right">
+            <form action="/">
             <label>Time</label>
-            <select >
+                <select id="timestamp" name="timestamp">
                 <tal:block tal:repeat="timestamp timestamps.timestamps">
                 <option tal:content="timestamp"></option>
                 </tal:block>
@@ -32,13 +33,15 @@
 
             <br>
             <label>Line</label>
-            <select >
-                <option selected>-ALL-</option>
+                <select id="line" name="line">
+                    <option selected value="all" tal:condition="line=='all'">-ALL-</option>
                 <tal:block tal:repeat="line lines.lines">
+                    <option tal:content="line" tal:condition="line" selected></option>
                     <option tal:content="line"></option>
                 </tal:block>
             </select>
-
+                <input type="submit" value="submit" method="GET"></input>
+            </form>
         </div>
         <div id="map"  ></div>
     <script type="text/javascript">
@@ -57,7 +60,7 @@
             visible: true,
             source: new ol.source.WMTS({
               url: 'http://wmts1.geoportail.lu/opendata/wmts/{Layer}/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png',
-              layer: 'basemap_2015_global',
+              layer: 'basemap',
               matrixSet: 'GLOBAL_WEBMERCATOR_4_V3',
               requestEncoding: /** @type {ol.source.WMTSRequestEncoding} */ ('REST'),
               format: 'image/png',
@@ -82,7 +85,7 @@
               opacity: 0.3,
               source: new ol.source.Vector({
                  projection : 'EPSG:3857',
-                 url: '/latest',
+                 url: '/data?timestamp=${timestamp}&line=${line}',
                  format: new ol.format.GeoJSON()
               })
            }),
@@ -90,7 +93,7 @@
               title: 'added Layer',
               source: new ol.source.Vector({
                  projection : 'EPSG:3857',
-                 url: '/latest',
+                 url: '/data?timestamp=${timestamp}&line=${line}',
                  format: new ol.format.GeoJSON()
               })
            })

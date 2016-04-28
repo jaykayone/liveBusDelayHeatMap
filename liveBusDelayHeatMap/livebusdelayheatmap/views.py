@@ -19,31 +19,43 @@ from .models import (
 
 @view_config(route_name='home', renderer='templates/index.pt')
 def home(request):
+    t = request.params.get('timestamp', None)
+    l = request.params.get('line', None)
+
     return {'timestamps': timestamps(None),
             'lines': lines_for_timestamp(None),
-            'a': 'a'}
+            'a': 'a',
+            'selected_timestamp': t,
+            'selected_line': l}
 
 
-@view_config(route_name='data_for_timestamp', renderer='geojson')
-def data_for_timestamp(request):
+@view_config(route_name='data', renderer='geojson')
+def data(request):
+    t = request.params.get('timestamp', None)
+    l = request.params.get('line', None)
+    if l == 'all':
+        l = None
     try:
-        d = dateutil.parser.parse(request.params['datetime'])
-        delays = DBSession.query(BusDelay).filter(BusDelay.time == d).all()
+        if t and not l:
+            print "bazinga"
+            d = dateutil.parser.parse(t)
+            delays = DBSession.query(BusDelay).filter(BusDelay.time == d).all()
+        elif t and l:
+            d = dateutil.parser.parse(t)
+            delays = DBSession.query(BusDelay).filter(and_(BusDelay.time == d, BusDelay.line == l)).all()
+        elif not t and l:
+            delays = DBSession.query(BusDelay).filter(BusDelay.line == l).all()
+        else:
+            latest_time = DBSession.query(BusDelay).order_by(BusDelay.time.desc()).first()
+            if latest_time:
+                delays = DBSession.query(BusDelay).filter(BusDelay.time == latest_time.time).all()
+            else:
+                delays = {}
 
     except DBAPIError:
         return Response("a problem occured", content_type='text/plain', status_int=500)
-    return {'type':'FeatureCollection','features': delays}
+    return {'type': 'FeatureCollection', 'features': delays}
 
-@view_config(route_name='data_for_timestamp_and_line', renderer='geojson')
-def data_for_timestamp_and_line(request):
-    try:
-        d = dateutil.parser.parse(request.params['datetime'])
-        l = request.matchdict['line']
-        delays = DBSession.query(BusDelay).filter(and_(BusDelay.time == d, BusDelay.line == l)).all()
-
-    except DBAPIError:
-        return Response("a problem occured", content_type='text/plain', status_int=500)
-    return {'type':'FeatureCollection','features': delays}
 
 @view_config(route_name='timestamps', renderer='json')
 def timestamps(request):
@@ -55,33 +67,9 @@ def timestamps(request):
     except DBAPIError:
         return Response("a problem occured", content_type='text/plain', status_int=500)
     return {'timestamps': sorted(out)}
-    
-@view_config(route_name='latest', renderer='geojson')
-def latest(request):
-    try:
-        latest_time = DBSession.query(BusDelay).order_by(BusDelay.time.desc()).first()
-        if latest_time:
-            delays = DBSession.query(BusDelay).filter(BusDelay.time == latest_time.time).all()
-        else:
-            delays = {}
-
-    except DBAPIError:
-        return Response("a problem occured", content_type='text/plain', status_int=500)
-    return {'type':'FeatureCollection','features': delays}
 
 
-@view_config(route_name='latest_for_line', renderer='geojson')
-def latest_for_line(request):
-    try:
-        l = request.matchdict['line']
-        latest_time = DBSession.query(BusDelay).order_by(BusDelay.time.desc()).first()
-        delays = DBSession.query(BusDelay).filter(and_(BusDelay.time == latest_time.time, BusDelay.line == l)).all()
-
-    except DBAPIError:
-        return Response("a problem occured", content_type='text/plain', status_int=500)
-    return {'type': 'FeatureCollection', 'features': delays}
-
-@view_config(route_name='lines_for_timestamp', renderer='json')
+@view_config(route_name='lines', renderer='json')
 def lines_for_timestamp(request):
     try:
         try:

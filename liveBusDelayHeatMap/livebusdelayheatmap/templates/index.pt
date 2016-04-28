@@ -27,23 +27,24 @@
             <label>Time</label>
                 <select id="timestamp" name="timestamp">
                 <tal:block tal:repeat="timestamp timestamps.timestamps">
-                <option tal:content="timestamp"></option>
+                    <option tal:content="timestamp" tal:condition="timestamp == selected_timestamp" selected></option>
+                    <option tal:content="timestamp" tal:condition="timestamp != selected_timestamp"></option>
                 </tal:block>
             </select>
 
             <br>
             <label>Line</label>
                 <select id="line" name="line">
-                    <option selected value="all" tal:condition="line=='all'">-ALL-</option>
+                    <option selected value="all">-ALL-</option>
                 <tal:block tal:repeat="line lines.lines">
-                    <option tal:content="line" tal:condition="line" selected></option>
-                    <option tal:content="line"></option>
+                    <option tal:content="line" tal:condition="line == selected_line" selected></option>
+                    <option tal:content="line" tal:condition="line != selected_line"></option>
                 </tal:block>
             </select>
                 <input type="submit" value="submit" method="GET"></input>
             </form>
         </div>
-        <div id="map"  ></div>
+        <div id="map"></div>
     <script type="text/javascript">
        
         var projection = ol.proj.get('EPSG:3857');
@@ -85,7 +86,7 @@
               opacity: 0.3,
               source: new ol.source.Vector({
                  projection : 'EPSG:3857',
-                 url: '/data?timestamp=${timestamp}&line=${line}',
+                 url: '/data?timestamp=${selected_timestamp}&line=${selected_line}',
                  format: new ol.format.GeoJSON()
               })
            }),
@@ -93,7 +94,7 @@
               title: 'added Layer',
               source: new ol.source.Vector({
                  projection : 'EPSG:3857',
-                 url: '/data?timestamp=${timestamp}&line=${line}',
+                 url: '/data?timestamp=${selected_timestamp}&line=${selected_line}',
                  format: new ol.format.GeoJSON()
               })
            })

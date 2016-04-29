@@ -30,8 +30,7 @@ def home(request):
         print ts
         t = sorted(ts["timestamps"], reverse=True)[0]
     l = request.params.get('line', None)
-    print t
-    print l
+    print timestamps(None)
     return {'timestamps': timestamps(None),
             'lines': lines_for_timestamp(None),
             'a': 'a',
@@ -94,7 +93,7 @@ def timestamps(request):
             out[t[0].isoformat()] = t[0].strftime('%d.%m.%Y %H:%M')
     except DBAPIError:
         return Response("a problem occured", content_type='text/plain', status_int=500)
-    return {'timestamps': sorted(out)}
+    return {'timestamps': out}
 
 
 @view_config(route_name='lines', renderer='json')

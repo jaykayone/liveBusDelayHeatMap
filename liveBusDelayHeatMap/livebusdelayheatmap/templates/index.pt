@@ -26,11 +26,12 @@
             <form action="/">
             <label>Time</label>
                 <select id="timestamp" name="timestamp">
-                <tal:block tal:repeat="timestamp timestamps.timestamps">
-                    <option tal:content="timestamp" tal:condition="timestamp == selected_timestamp" selected>
+                    <tal:block tal:repeat="timestamp sorted(timestamps.timestamps)">
+                        <option tal:attributes="value timestamp" tal:condition="timestamp == selected_timestamp"
+                                selected>
                         ${timestamps.timestamps[timestamp]}
                     </option>
-                    <option tal:content="timestamp" tal:condition="timestamp != selected_timestamp">
+                        <option tal:attributes="value timestamp" tal:condition="timestamp != selected_timestamp">
                         ${timestamps.timestamps[timestamp]}
                     </option>
                 </tal:block>

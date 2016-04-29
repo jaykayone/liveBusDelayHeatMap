@@ -55,7 +55,7 @@ def data(request):
             if not g:
                 delays = DBSession.query(BusDelay).filter(BusDelay.time == d).all()
             else:
-                delays = DBSession.query(BusAverageDelay).filter(BusDelay.time == d).all()
+                delays = DBSession.query(BusAverageDelay).filter(BusAverageDelay.time == d).all()
         elif t and l:
             d = dateutil.parser.parse(t)
             if not g:

@@ -31,9 +31,13 @@ def main(global_config, **settings):
                     create view v_bus_average_delays as
                     select id,time,geom,name,avg(delay) as mean_delay, avg(delay)/ 10 as weight from busdelays
                     group by (id,time,geom,name);""")
+        i1 = text("""CREATE INDEX bus_average_delays_idx ON busdelays (id,time,geom,name);""")
+        i2 = text("""CREATE INDEX bus_average_delays_by_line_idx ON busdelays (id,time,geom,name,line);""")
         c = engine.connect()
         c.execute(s1)
         c.execute(s2)
+        c.execute(i1)
+        c.execute(i2)
     except:
         pass
 

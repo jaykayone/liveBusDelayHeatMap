@@ -27,8 +27,12 @@
             <label>Time</label>
                 <select id="timestamp" name="timestamp">
                 <tal:block tal:repeat="timestamp timestamps.timestamps">
-                    <option tal:content="timestamp" tal:condition="timestamp == selected_timestamp" selected></option>
-                    <option tal:content="timestamp" tal:condition="timestamp != selected_timestamp"></option>
+                    <option tal:content="timestamp" tal:condition="timestamp == selected_timestamp" selected>
+                        ${timestamps.timestamps[timestamp]}
+                    </option>
+                    <option tal:content="timestamp" tal:condition="timestamp != selected_timestamp">
+                        ${timestamps.timestamps[timestamp]}
+                    </option>
                 </tal:block>
             </select>
 
@@ -79,22 +83,36 @@
               style: 'default'
             
           })
-      }),
-      new ol.layer.Heatmap({
-              title: 'added Layer',
-              weight:'return delay/10',
-              opacity: 0.3,
-              source: new ol.source.Vector({
-                 projection : 'EPSG:3857',
-                 url: '/data?timestamp=${selected_timestamp}&line=${selected_line}',
-                 format: new ol.format.GeoJSON()
-              })
-           }),
+      })
+      ,
       new ol.layer.Vector({
               title: 'added Layer',
               source: new ol.source.Vector({
                  projection : 'EPSG:3857',
                  url: '/data?timestamp=${selected_timestamp}&line=${selected_line}',
+                 format: new ol.format.GeoJSON(),
+
+              }),
+              style: new ol.style.Style({
+                     image: new ol.style.Circle({
+                       radius: 2,
+                       fill: new ol.style.Fill({
+                         color: "#fff"
+                       }),
+                       stroke: new ol.style.Stroke({
+                         color: "#f00",
+                         width: 1
+                       })
+                     }),
+                     zIndex: Infinity
+                   })
+           }),
+      new ol.layer.Heatmap({
+              title: 'added Layer',
+              opacity: 0.3,
+              source: new ol.source.Vector({
+                 projection : 'EPSG:3857',
+                 url: '/data?timestamp=${selected_timestamp}&line=${selected_line}&grouped=True',
                  format: new ol.format.GeoJSON()
               })
            })
@@ -106,7 +124,9 @@
           zoom: 13
         })
       });
-  
+
+
+
 
     </script>
   </body>

@@ -37,3 +37,23 @@ class BusDelay(GeoInterface,Base):
     geom = Column(Geometry('POINT', srid=4326))
     time = Column(DateTime, index=True)
 
+
+class BusAverageDelayPerLine(GeoInterface, Base):
+    __tablename__ = 'v_bus_average_delays_by_line'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    line = Column(String)
+    mean_delay = Column(Float)
+    weight = Column(Float)
+    geom = Column(Geometry('POINT', srid=4326))
+    time = Column(DateTime, index=True)
+
+
+class BusAverageDelay(GeoInterface, Base):
+    __tablename__ = 'v_bus_average_delays'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    mean_delay = Column(Float)
+    weight = Column(Float)
+    geom = Column(Geometry('POINT', srid=4326))
+    time = Column(DateTime, index=True)

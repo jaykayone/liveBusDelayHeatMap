@@ -5,10 +5,14 @@ import dateutil.parser
 
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy import and_
+from sqlalchemy import func
+
 
 from .models import (
     DBSession,
-    BusDelay
+    BusDelay,
+    BusAverageDelay,
+    BusAverageDelayPerLine
 )
 
 
@@ -21,8 +25,13 @@ from .models import (
 @view_config(route_name='home', renderer='templates/index.pt')
 def home(request):
     t = request.params.get('timestamp', None)
+    if t is None:
+        ts = timestamps(None)
+        print ts
+        t = sorted(ts["timestamps"], reverse=True)[0]
     l = request.params.get('line', None)
-
+    print t
+    print l
     return {'timestamps': timestamps(None),
             'lines': lines_for_timestamp(None),
             'a': 'a',
@@ -34,22 +43,40 @@ def home(request):
 def data(request):
     t = request.params.get('timestamp', None)
     l = request.params.get('line', None)
+    ## We made a try to group by location and id, but geometry does not seem to be group_by_able
+    ## We could calculate mean delay per station ID but not include the geom in the result
+    g = request.params.get('grouped', False)
+    ##
+
     if l == 'all':
         l = None
     try:
         if t and not l:
-            print "bazinga"
             d = dateutil.parser.parse(t)
-            delays = DBSession.query(BusDelay).filter(BusDelay.time == d).all()
+            if not g:
+                delays = DBSession.query(BusDelay).filter(BusDelay.time == d).all()
+            else:
+                delays = DBSession.query(BusAverageDelay).filter(BusDelay.time == d).all()
         elif t and l:
             d = dateutil.parser.parse(t)
-            delays = DBSession.query(BusDelay).filter(and_(BusDelay.time == d, BusDelay.line == l)).all()
+            if not g:
+                delays = DBSession.query(BusDelay).filter(and_(BusDelay.time == d, BusDelay.line == l)).all()
+            else:
+                delays = DBSession.query(BusAverageDelayPerLine).filter(and_(BusAverageDelayPerLine.time == d,
+                                                                             BusAverageDelayPerLine.line == l)).all()
+
         elif not t and l:
-            delays = DBSession.query(BusDelay).filter(BusDelay.line == l).all()
+            if not g:
+                delays = DBSession.query(BusDelay).filter(BusDelay.line == l).all()
+            else:
+                delays = DBSession.query(BusAverageDelayPerLine).filter(BusAverageDelayPerLine.line == l).all()
         else:
             latest_time = DBSession.query(BusDelay).order_by(BusDelay.time.desc()).first()
             if latest_time:
-                delays = DBSession.query(BusDelay).filter(BusDelay.time == latest_time.time).all()
+                if not g:
+                    delays = DBSession.query(BusDelay).filter(BusDelay.time == latest_time.time).all()
+                else:
+                    delays = DBSession.query(BusAverageDelay).filter(BusAverageDelay.time == latest_time.time).all()
             else:
                 delays = {}
 
@@ -62,9 +89,9 @@ def data(request):
 def timestamps(request):
     try:
         ts = DBSession.query(BusDelay.time).group_by(BusDelay.time).all()
-        out = []
+        out = {}
         for t in ts:
-            out.append(t[0].isoformat())
+            out[t[0].isoformat()] = t[0].strftime('%d.%m.%Y %H:%M')
     except DBAPIError:
         return Response("a problem occured", content_type='text/plain', status_int=500)
     return {'timestamps': sorted(out)}

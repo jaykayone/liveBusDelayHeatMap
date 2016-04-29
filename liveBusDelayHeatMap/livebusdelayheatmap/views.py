@@ -1,5 +1,6 @@
 from pyramid.response import Response
 from pyramid.view import view_config
+from natsort import natsort
 import dateutil.parser
 
 from sqlalchemy.exc import DBAPIError
@@ -82,4 +83,4 @@ def lines_for_timestamp(request):
             output.append(l[0])
     except DBAPIError:
         return Response("a problem occured", content_type='text/plain', status_int=500)
-    return {'lines': sorted(output,key=natural_keys)}
+    return {'lines': natsort(output)}

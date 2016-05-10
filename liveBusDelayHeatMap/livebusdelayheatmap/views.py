@@ -27,8 +27,6 @@ def home(request):
     t = request.params.get('timestamp', None)
     if t is None:
         ts = timestamps(None)["timestamps"]
-        print "taka"
-        print ts
         t = sorted(ts, reverse=True)[0]
     l = request.params.get('line', None)
     return {'timestamps': timestamps(None),

@@ -47,6 +47,7 @@ class BusAverageDelayPerLine(GeoInterface, Base):
     weight = Column(Float)
     geom = Column(Geometry('POINT', srid=4326))
     time = Column(DateTime, index=True)
+    formatted_delay_info = Column(String)
 
 
 class BusAverageDelay(GeoInterface, Base):
@@ -57,3 +58,4 @@ class BusAverageDelay(GeoInterface, Base):
     weight = Column(Float)
     geom = Column(Geometry('POINT', srid=4326))
     time = Column(DateTime, index=True)
+    formatted_delay_info = Column(String)

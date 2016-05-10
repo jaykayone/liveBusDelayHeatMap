@@ -21,22 +21,60 @@ def main(global_config, **settings):
         Base.metadata.create_all(engine)
     except:
         pass
-    try:
+
         # drop the newly created tables and replace them by views (did not find how to do this otherwise, but works)
-        s1 = text("""drop table v_bus_average_delays_by_line;
-                    create view v_bus_average_delays_by_line as
-                    select id,time,geom,name,line,avg(delay) as mean_delay, avg(delay)/ 10 as weight from busdelays
-                    group by (id,time,geom,name,line);""")
-        s2 = text("""drop table v_bus_average_delays;
-                    create view v_bus_average_delays as
-                    select id,time,geom,name,avg(delay) as mean_delay, avg(delay)/ 10 as weight from busdelays
-                    group by (id,time,geom,name);""")
-        i1 = text("""CREATE INDEX bus_average_delays_idx ON busdelays (id,time,geom,name);""")
-        i2 = text("""CREATE INDEX bus_average_delays_by_line_idx ON busdelays (id,time,geom,name,line);""")
-        c = engine.connect()
-        c.execute(s1)
-        c.execute(s2)
+    s0a = text("""create or replace view v_bus_delays_concat as
+select *, 'Line ' || line || ' : ' || delay || 'min at ' || to_char(time,'HH24:MI') as formatted from busdelays;""")
+    s1a = text("""drop table v_bus_average_delays_by_line;""")
+    s1b = text("""drop view v_bus_average_delays_by_line;""")
+    s1c = text("""create or replace view v_bus_average_delays_by_line as
+                select id,time,geom,name,line,avg(delay) as mean_delay,
+                string_agg(formatted ,'@') as formatted_delay_info,
+                avg(delay)/ 5 as weight from v_bus_delays_concat
+                group by (id,time,geom,name,line);""")
+
+    s2a = text("""drop table v_bus_average_delays;""")
+    s2b = text("""drop view v_bus_average_delays;""")
+    s2c = text("""create or replace view v_bus_average_delays as
+                  select id,time,geom,name,avg(delay) as mean_delay,
+                  string_agg(formatted ,'@') as formatted_delay_info , avg(delay)/ 5 as weight from v_bus_delays_concat
+                  group by (id,time,geom,name);""")
+    i1 = text("""CREATE INDEX bus_average_delays_idx ON busdelays (id,time,geom,name);""")
+    i2 = text("""CREATE INDEX bus_average_delays_by_line_idx ON busdelays (id,time,geom,name,line);""")
+    c = engine.connect()
+    try:
+        c.execute(s0a)
+    except:
+        pass
+    try:
+        c.execute(s1a)
+    except:
+        pass
+    try:
+        c.execute(s1b)
+    except:
+        pass
+    try:
+        c.execute(s1c)
+    except:
+        pass
+    try:
+        c.execute(s2a)
+    except:
+        pass
+    try:
+        c.execute(s2b)
+    except:
+        pass
+    try:
+        c.execute(s2c)
+    except:
+        pass
+    try:
         c.execute(i1)
+    except:
+        pass
+    try:
         c.execute(i2)
     except:
         pass

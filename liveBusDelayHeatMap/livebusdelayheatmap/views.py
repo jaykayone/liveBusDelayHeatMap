@@ -26,11 +26,11 @@ from .models import (
 def home(request):
     t = request.params.get('timestamp', None)
     if t is None:
-        ts = timestamps(None)
+        ts = timestamps(None)["timestamps"]
+        print "taka"
         print ts
-        t = sorted(ts["timestamps"], reverse=True)[0]
+        t = sorted(ts, reverse=True)[0]
     l = request.params.get('line', None)
-    print timestamps(None)
     return {'timestamps': timestamps(None),
             'lines': lines_for_timestamp(None),
             'a': 'a',

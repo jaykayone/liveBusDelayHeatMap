@@ -161,7 +161,7 @@ class DataPreparer:
                 for d in f.delays:
                     delay = BusDelay()
                     delay.id = f.id
-                    delay.name_ = f.name
+                    delay.name = f.name
                     delay.line = d[0]
                     delay.delay = d[1]/60
                     delay.geom = from_shape(f.geom, srid=4326)

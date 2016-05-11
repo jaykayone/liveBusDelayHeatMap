@@ -19,6 +19,7 @@ pyramid-debugtoolbar==2.5
 pyramid-mako==1.0.2
 pyramid-tm==0.12.1
 python-dateutil==2.5.3
+pytz=2016.4
 repoze.lru==0.6
 requests==2.9.1
 requests-futures==0.9.7

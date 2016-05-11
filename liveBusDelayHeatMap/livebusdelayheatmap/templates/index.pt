@@ -50,9 +50,10 @@
                 <input type="submit" value="submit" method="GET"></input>
             </form>
         </div>
-        <div id="map">
-            <div id="popup"></div>
+        <div id="map" style="width:70%;float:left;height:600px">
+
         </div>
+        <div id="popup" style="width:30%;white-space:nowrap;overflow:hidden;background-color:#ccc;height:600px"></div>
     <script type="text/javascript">
 
 
@@ -85,6 +86,7 @@
         var heatmapLayer = new ol.layer.Heatmap({
               title: 'added Layer',
               opacity: 0.3,
+              radius: 15,
               source: new ol.source.Vector({
                  projection : 'EPSG:3857',
                  url: '/data?timestamp=${selected_timestamp}&line=${selected_line}&grouped=True',
@@ -180,23 +182,29 @@
         var feature = map.forEachFeatureAtPixel(pixel, function(feature,vectorLayer) {
           return feature;
         });
-        /*
+
         var info = document.getElementById('popup');
         if (feature) {
-          info.innerHTML = 'Mean Delay : ' + feature.get('mean_delay');
+            var text = "<h3>" + feature.get('name') + "</h3>";
+            text += "<br><h4>Mean delay: " + Math.round(feature.get('mean_delay'),2).toString() + "m</h4>";
+            text += "<table style='vertical-align:top'>"
+            text += "<tr><th>Line</th><th>Destination</th><th>Delay</th><th>Departure</th>"
+            text += feature.get('formatted_delay_info');
+            text += "</table>"
+            info.innerHTML = text;
         } else {
           info.innerHTML = '&nbsp;';
         }
-        */
+
 
         if (feature !== highlight) {
           if (highlight) {
             featureOverlay.getSource().removeFeature(highlight);
           }
           if (feature) {
-            var text = "Station: " + feature.get('name');
-            text += "\nMean delay: " + Math.round(feature.get('mean_delay'),2).toString() + "m";
-            text += "\n"+feature.get('formatted_delay_info').replace(/@/g,'\n');
+            var text = "";
+            text += Math.round(feature.get('mean_delay'),2).toString() + "m";
+
             mystyle.getText().setText(text);
             featureOverlay.getSource().addFeature(feature);
           }
@@ -213,11 +221,11 @@
         displayFeatureInfo(pixel);
       });
 
-      /*
+
       map.on('click', function(evt) {
         displayFeatureInfo(evt.pixel);
       });
-      */
+
 
     </script>
   </body>

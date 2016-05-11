@@ -23,13 +23,15 @@ def main(global_config, **settings):
         pass
 
         # drop the newly created tables and replace them by views (did not find how to do this otherwise, but works)
-    s0a = text("""create or replace view v_bus_delays_concat as
-select *, 'Line ' || line || ' : ' || delay || 'min at ' || to_char(time,'HH24:MI') as formatted from busdelays;""")
+    s0a = text("""drop view v_bus_delays_concat""")
+    s0b = text("""create or replace view v_bus_delays_concat as
+select *, '<tr><td> ' || line || '</td><td>' || destination || '</td><td>' || delay ||
+'min</td><td>' || to_char(departure,'HH24:MI') || '</td></tr>' as formatted from busdelays order by formatted asc;""")
     s1a = text("""drop table v_bus_average_delays_by_line;""")
     s1b = text("""drop view v_bus_average_delays_by_line;""")
     s1c = text("""create or replace view v_bus_average_delays_by_line as
                 select id,time,geom,name,line,avg(delay) as mean_delay,
-                string_agg(formatted ,'@') as formatted_delay_info,
+                string_agg(formatted ,'') as formatted_delay_info,
                 avg(delay)/ 5 as weight from v_bus_delays_concat
                 group by (id,time,geom,name,line);""")
 
@@ -37,17 +39,13 @@ select *, 'Line ' || line || ' : ' || delay || 'min at ' || to_char(time,'HH24:M
     s2b = text("""drop view v_bus_average_delays;""")
     s2c = text("""create or replace view v_bus_average_delays as
                   select id,time,geom,name,avg(delay) as mean_delay,
-                  string_agg(formatted ,'@') as formatted_delay_info , avg(delay)/ 5 as weight from v_bus_delays_concat
+                  string_agg(formatted ,'') as formatted_delay_info , avg(delay)/ 5 as weight from v_bus_delays_concat
                   group by (id,time,geom,name);""")
     i1 = text("""CREATE INDEX bus_average_delays_idx ON busdelays (id,time,geom,name);""")
     i2 = text("""CREATE INDEX bus_average_delays_by_line_idx ON busdelays (id,time,geom,name,line);""")
     c = engine.connect()
     try:
-        c.execute(s0a)
-    except:
-        pass
-    try:
-        c.execute(s1a)
+        c.execute(s2b)
     except:
         pass
     try:
@@ -55,15 +53,25 @@ select *, 'Line ' || line || ' : ' || delay || 'min at ' || to_char(time,'HH24:M
     except:
         pass
     try:
+        c.execute(s0a)
+    except:
+        pass
+    try:
+        c.execute(s0b)
+    except:
+        pass
+    try:
+        c.execute(s1a)
+    except:
+        pass
+
+    try:
         c.execute(s1c)
     except:
         pass
+
     try:
         c.execute(s2a)
-    except:
-        pass
-    try:
-        c.execute(s2b)
     except:
         pass
     try:

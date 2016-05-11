@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from requests_futures.sessions import FuturesSession
 from concurrent.futures import ThreadPoolExecutor
 from ConfigParser import SafeConfigParser
+import pytz
 
 
 class BusStopDelay:
@@ -21,8 +22,8 @@ class BusStopDelay:
         self.delays = []
         pass
 
-    def set_delay(self, line, delay):
-        array = [line,delay]
+    def set_delay(self, line, delay, number, departure, destination):
+        array = [line, delay, number, departure, destination]
         self.delays.append(array)
 
     def __str__(self):
@@ -147,9 +148,12 @@ class DataPreparer:
             live_info = result.json()
             k = 0
             for course in live_info:
-                if int(course["delay"]) > 0:
+                if int(course["delay"]) >= 0:
                     self.busStopArray[id].set_delay(course["line"],
-                                                    course["delay"])
+                                                    course["delay"],
+                                                    course["number"],
+                                                    course["departure"],
+                                                    course["destination"])
                     k += 1
             if k == 0:
                 del self.busStopArray[id]
@@ -166,6 +170,9 @@ class DataPreparer:
                     delay.delay = d[1]/60
                     delay.geom = from_shape(f.geom, srid=4326)
                     delay.time = self.latestUpdateStartTime
+                    delay.number = d[2]
+                    delay.departure = datetime.datetime.fromtimestamp(d[3])
+                    delay.destination = d[4]
                     session.add(delay)
         session.commit()
 

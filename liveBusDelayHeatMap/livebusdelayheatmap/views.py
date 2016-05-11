@@ -21,6 +21,8 @@ from .models import (
 ## TODO: timestamp formatting
 ## TODO: Add UI for LINE AND TIME
 ## TODO: LOG TO CONTAINER
+## TODO: INDEX FOR CONCAT : CURRENTLY VERY SLOW
+## TODO: BETTER HEATMAP FORMATTING:
 
 @view_config(route_name='home', renderer='templates/index.pt')
 def home(request):

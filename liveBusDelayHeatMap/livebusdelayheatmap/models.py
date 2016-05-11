@@ -36,6 +36,9 @@ class BusDelay(GeoInterface,Base):
     delay = Column(Float)
     geom = Column(Geometry('POINT', srid=4326))
     time = Column(DateTime, index=True)
+    number = Column(Integer)
+    departure = Column(DateTime)
+    destination = Column(String)
 
 
 class BusAverageDelayPerLine(GeoInterface, Base):

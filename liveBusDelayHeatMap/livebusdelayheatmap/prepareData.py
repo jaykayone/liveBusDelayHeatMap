@@ -160,6 +160,7 @@ class DataPreparer:
 
     def write_to_postgis(self):
         session = self.Session()
+        i = 0
         for id in self.busStopArray:
                 f = self.busStopArray[id]
                 for d in f.delays:
@@ -174,6 +175,10 @@ class DataPreparer:
                     delay.departure = datetime.datetime.fromtimestamp(d[3])
                     delay.destination = d[4]
                     session.add(delay)
+                i += 1
+                if i % 500 == 0:
+                    print "committing after %s" % i
+                    session.commit()
         session.commit()
 
 

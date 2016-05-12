@@ -10,9 +10,12 @@ busmap-cron:
   links:
   - 'postgis:'
   stdin_open: true
+  environment:
+    TZ: Europe/Luxembourg
 postgis:
   environment:
     POSTGRES_PASSWORD: xxxx
+    TZ: Europe/Luxembourg
   log_driver: ''
   labels:
     io.rancher.container.pull_image: always
@@ -34,3 +37,5 @@ busmap:
   links:
   - 'postgis:'
   stdin_open: true
+  environment:
+    TZ: Europe/Luxembourg

@@ -31,7 +31,7 @@ select *, '<tr><td> ' || line || '</td><td>' || destination || '</td><td>' || de
     s1b = text("""drop view v_bus_average_delays_by_line;""")
     s1c = text("""create or replace view v_bus_average_delays_by_line as
                 select id,time,geom,name,line,avg(delay) as mean_delay,
-                string_agg(formatted ,'') as formatted_delay_info,
+                string_agg(formatted ,'' order by line asc, destination asc, departure asc) as formatted_delay_info,
                 avg(delay)/ 5 as weight from v_bus_delays_concat
                 group by (id,time,geom,name,line);""")
 
@@ -39,7 +39,7 @@ select *, '<tr><td> ' || line || '</td><td>' || destination || '</td><td>' || de
     s2b = text("""drop view v_bus_average_delays;""")
     s2c = text("""create or replace view v_bus_average_delays as
                   select id,time,geom,name,avg(delay) as mean_delay,
-                  string_agg(formatted ,'') as formatted_delay_info , avg(delay)/ 5 as weight from v_bus_delays_concat
+                  string_agg(formatted ,'' order by line asc, destination asc, departure asc) as formatted_delay_info , avg(delay)/ 5 as weight from v_bus_delays_concat
                   group by (id,time,geom,name);""")
     i1 = text("""CREATE INDEX bus_average_delays_idx ON busdelays (id,time,geom,name);""")
     i2 = text("""CREATE INDEX bus_average_delays_by_line_idx ON busdelays (id,time,geom,name,line);""")

@@ -5,7 +5,6 @@ WORKDIR /app
 ##CREATE VIRTUAL ENV
 RUN mkdir -p ${appdir}
 RUN cd ${appdir} && virtualenv env
-#INSTALL WSSECURITY STUFF
 RUN echo alias ll=\'ls -lisa\' >> ~/.bashrc
 RUN /bin/bash -c "source ${appdir}/env/bin/activate && pip install --upgrade pip && pip install --upgrade setuptools"
 COPY app.wsgi /app/app.wsgi

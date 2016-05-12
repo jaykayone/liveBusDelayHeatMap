@@ -11,7 +11,6 @@ from sqlalchemy.orm import sessionmaker
 from requests_futures.sessions import FuturesSession
 from concurrent.futures import ThreadPoolExecutor
 from ConfigParser import SafeConfigParser
-import pytz
 
 
 class BusStopDelay:

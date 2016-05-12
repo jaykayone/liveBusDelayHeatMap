@@ -17,17 +17,11 @@ from .models import (
 
 
 
-## TODO: BETTER STYLING
-## TODO: timestamp formatting
-## TODO: Add UI for LINE AND TIME
-## TODO: LOG TO CONTAINER
-## TODO: INDEX FOR CONCAT : CURRENTLY VERY SLOW
-## TODO: BETTER HEATMAP FORMATTING:
 
 @view_config(route_name='home', renderer='templates/index.pt')
 def home(request):
     t = request.params.get('timestamp', None)
-    if t is None:
+    if t is None or t == 'latest':
         ts = timestamps(None)["timestamps"]
         t = sorted(ts, reverse=True)[0]
     l = request.params.get('line', None)
@@ -49,6 +43,8 @@ def data(request):
 
     if l == 'all':
         l = None
+    if t == 'latest':
+        t = None
     try:
         if t and not l:
             d = dateutil.parser.parse(t)

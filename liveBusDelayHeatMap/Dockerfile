@@ -21,6 +21,8 @@ COPY production.ini ${appdir}/liveBusDelayHeatMap/liveBusDelayHeatMap/production
 RUN chown -R whiskey: ${appdir} && chmod a+x ${appdir}/app.wsgi && chmod 400 ${appdir}/liveBusDelayHeatMap/liveBusDelayHeatMap/production.ini
 COPY crontab /app/crontab
 RUN cat crontab >> /etc/crontab
+RUN ln -sf /proc/1/fd/1 /app/cron_full_latest.log
+RUN ln -sf /proc/1/fd/1 /app/cron_inc_latest.log
 
 #DEFINE ENTRYPOINT
 ENTRYPOINT /app/startup.sh

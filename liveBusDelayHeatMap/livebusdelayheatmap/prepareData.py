@@ -175,8 +175,8 @@ class DataPreparer:
                     delay.destination = d[4]
                     session.add(delay)
                 i += 1
-                if i % 500 == 0:
-                    print "committing after %s" % i
+                if i % 250 == 0:
+                    print "committing after %s stops" % i
                     session.commit()
         session.commit()
 

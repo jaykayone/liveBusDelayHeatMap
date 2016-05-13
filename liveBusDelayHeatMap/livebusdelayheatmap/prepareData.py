@@ -57,8 +57,8 @@ class DataPreparer:
             stop = Station(name=d.name,id=d.id,geom= from_shape(d.geom, srid=4326))
             session.add(stop)
             i+=1
-            #if i % 100 == 0:
-            #    session.commit()
+            if i % 100 == 0:
+                session.commit()
         session.commit()
         print "pushing to postgis -- finished"
 

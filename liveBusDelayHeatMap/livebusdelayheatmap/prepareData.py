@@ -36,8 +36,8 @@ class DataPreparer:
     def __init__(self, init=True, config_file='../production.ini'):
         parser = SafeConfigParser()
         parser.read(config_file)
-        engine = create_engine(parser.get('app:main', 'sqlalchemy.url'))#, echo=True)
-        self.Session = sessionmaker(bind=engine)
+        selfengine = create_engine(parser.get('app:main', 'sqlalchemy.url'))  # , echo=True)
+        self.Session = sessionmaker(bind=self.engine)
         self.busStopArray = {}
         self.__get_bus_stops()
         if init:
@@ -179,6 +179,11 @@ class DataPreparer:
                     print "committing after %s stops" % i
                     session.commit()
         session.commit()
+        s = "delete from busdelays where CURRENT_TIMESTAMP - time > INTERVAL '24 hours'"
+        c = self.engine.connect()
+        c.execute(s)
+        del c
+        session.close()
 
 
 if __name__ == "__main__":

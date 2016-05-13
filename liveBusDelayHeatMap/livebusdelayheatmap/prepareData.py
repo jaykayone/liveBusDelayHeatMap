@@ -63,9 +63,14 @@ class DataPreparer:
         print "pushing to postgis -- finished"
 
     def __updateStationTags(self):
+        print "updating tags"
         session = self.Session()
+        i = 1
         for id in session.query(BusDelay.id).distinct():
             session.query(Station).filter(Station.id == id).update({'has_delaydata': True})
+            i += 1
+            if i % 100 == 0:
+                session.commit()
         session.commit()
 
     def __get_bus_stops(self):

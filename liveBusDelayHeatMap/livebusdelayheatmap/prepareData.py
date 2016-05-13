@@ -36,7 +36,7 @@ class DataPreparer:
     def __init__(self, init=True, config_file='../production.ini'):
         parser = SafeConfigParser()
         parser.read(config_file)
-        selfengine = create_engine(parser.get('app:main', 'sqlalchemy.url'))  # , echo=True)
+        self.engine = create_engine(parser.get('app:main', 'sqlalchemy.url'))  # , echo=True)
         self.Session = sessionmaker(bind=self.engine)
         self.busStopArray = {}
         self.__get_bus_stops()

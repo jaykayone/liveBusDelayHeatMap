@@ -1,4 +1,2 @@
-0      * * * *  root    sh /app/getDelayData_full.sh 
-#>> /app/cron_full_latest.log 2>&1
-5-55/5 * * * *  root    sh /app/getDelayData_incremental.sh 
-#>> /app/cron_inc_latest.log 2>&1
+0      * * * *  root    sh /app/getDelayData_full.sh >> /app/cron_full_latest.log 2>&1
+5-55/5 * * * *  root    sh /app/getDelayData_incremental.sh >> /app/cron_inc_latest.log 2>&1

@@ -152,7 +152,7 @@ class DataPreparer:
             live_info = result.json()
             k = 0
             for course in live_info:
-                if int(course["delay"]) > 0:
+                if int(course["delay"]) >= 0:
                     self.busStopArray[id].set_delay(course["line"],
                                                     course["delay"],
                                                     course["number"],

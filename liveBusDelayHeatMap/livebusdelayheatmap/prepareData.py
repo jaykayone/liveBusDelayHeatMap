@@ -131,8 +131,14 @@ class DataPreparer:
         print "requesting in parallel with size % s" % size
         #results = grequests.map(rs, size = size)
         results = []
+        i=0
         for resp in responses:
-            results.append(resp.result())
+            try:
+                results.append(resp.result())
+            except:
+                i += 1
+        if i > 0:
+            print "there was a problem appending %s results from a given response" % i
         print datetime.datetime.now()
         print "-- finished the querying"
 

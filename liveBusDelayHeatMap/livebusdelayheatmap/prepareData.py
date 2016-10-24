@@ -136,6 +136,7 @@ class DataPreparer:
             try:
                 results.append(resp.result())
             except:
+                results.append(None)
                 i += 1
         if i > 0:
             print "there was a problem appending %s results from a given response" % i

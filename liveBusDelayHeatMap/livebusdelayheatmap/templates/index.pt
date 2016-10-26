@@ -87,7 +87,7 @@
     var heatmapLayer = new ol.layer.Heatmap({
         title: 'added Layer',
         opacity: 0.3,
-        radius: 30,
+        radius: 100,
         source: s
     });
 

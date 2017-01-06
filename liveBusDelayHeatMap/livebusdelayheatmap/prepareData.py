@@ -29,11 +29,13 @@ class BusStopDelay:
         print "id: %s" % self.id
         print "name: %s" % self.name
         print "geom: %s" % self.geom
-        print "delays: %s" %self.delays
+        print "delays: %s" % self.delays
 
 
 class DataPreparer:
     def __init__(self, init=True, config_file='../production.ini'):
+        print "init is %s" % init
+        print "config is %s" % config_file
         parser = SafeConfigParser()
         parser.read(config_file)
         self.engine = create_engine(parser.get('app:main', 'sqlalchemy.url'))  # , echo=True)
@@ -54,12 +56,14 @@ class DataPreparer:
         i=0
         for id in self.busStopArray:
             d = self.busStopArray[id]
-            stop = Station(name=d.name,id=d.id,geom= from_shape(d.geom, srid=4326))
+            stop = Station(name=d.name, id=d.id, geom=from_shape(d.geom, srid=4326))
             session.add(stop)
             i+=1
             if i % 100 == 0:
                 session.commit()
         session.commit()
+        print "%s stations" % i
+        print "stations in array: %s" % len(self.busStopArray)
         print "pushing to postgis -- finished"
 
     def __updateStationTags(self):
@@ -74,7 +78,7 @@ class DataPreparer:
         session.commit()
 
     def __get_bus_stops(self):
-        url = "https://api.tfl.lu/stations.geojson"
+        url = "https://api.tfl.lu/v1/StopPoint"
         data = requests.get(url).json()
         i = 0
         for feature in data["features"]:
@@ -82,7 +86,7 @@ class DataPreparer:
             name = feature["properties"]["name"]
             id = feature["properties"]["id"]
             bsd = BusStopDelay(id,name,geom)
-            self.busStopArray[id] = (bsd)
+            self.busStopArray[id] = bsd
             i += 1
             #if i > 1000:
             #    break
@@ -96,7 +100,7 @@ class DataPreparer:
             if i % 100 == 0:
                 print i
             i += 1
-            url = "https://api.tfl.lu/departures/%s" % stop
+            url = "https://api.tfl.lu/v1/StopPoint/Departures/%s" % stop
             info = self.busStopArray[stop]
             liveInfo = requests.get(url).json()
             for course in liveInfo:
@@ -117,7 +121,7 @@ class DataPreparer:
             array = self.busStopArray
         for stop in array:
             stops.append(stop)
-            urls.append("https://api.tfl.lu/departures/%s" % stop)
+            urls.append("https://api.tfl.lu/v1/StopPoint/Departures/%s" % stop)
         size = 25
         future_session =  FuturesSession(executor=ThreadPoolExecutor(max_workers=size))
         responses = []
@@ -149,25 +153,23 @@ class DataPreparer:
                 ct += 1
         print "got %s responses" % ct
 
-        j = 0
         for result in results:
-            id = stops[j]
-            j += 1
+            id = int(result.url.split("/")[-1])
             if not result or len(result.content) == 0:
                 del self.busStopArray[id]
                 continue
             live_info = result.json()
-            k = 0
             for course in live_info:
-                if int(course["delay"]) >= 0:
-                    self.busStopArray[id].set_delay(course["line"],
+                if course["live"]:
+                    try:
+                        self.busStopArray[id].set_delay(course["line"],
                                                     course["delay"],
                                                     course["number"],
                                                     course["departure"],
                                                     course["destination"])
-                    k += 1
-            if k == 0:
-                del self.busStopArray[id]
+                    except:
+                        print "could not save delay information for stop % s" % id
+                        pass
 
     def write_to_postgis(self):
         session = self.Session()
@@ -202,10 +204,21 @@ if __name__ == "__main__":
     dp = None
 
     _config_file = '../production.ini'
-    if sys.argv[1]:
-        config_file = sys.argv[1]
+    try:
+        _config_file = sys.argv[1]
+    except:
+        pass
     # FULL DB UPDATE == TRUE?
-    if sys.argv[2] == 'True':
+    try:
+        # print "--->" + sys.argv[2]
+        _full_update = sys.argv[2] == 'True'
+    except:
+        _full_update = True
+
+    # print _full_update
+    # print _config_file
+
+    if _full_update is True:
         dp = DataPreparer(init=True, config_file=_config_file)
         dp.compute_delays_async(shortlist=False)
     # FULL DB UPDATE == FALSE

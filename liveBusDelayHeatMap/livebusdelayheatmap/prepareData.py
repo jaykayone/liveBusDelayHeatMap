@@ -170,6 +170,16 @@ class DataPreparer:
                     except:
                         print "could not save delay information for stop % s" % id
                         pass
+                else:
+                    try:
+                        self.busStopArray[id].set_delay(course["line"],
+                                                    -1,
+                                                    course["number"],
+                                                    course["departure"],
+                                                    course["destination"])
+                    except:
+                        print "could not save delay information for stop % s" % id
+                        pass
 
     def write_to_postgis(self):
         session = self.Session()

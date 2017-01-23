@@ -203,7 +203,7 @@ class DataPreparer:
                     print "committing after %s stops" % i
                     session.commit()
         session.commit()
-        s = "delete from busdelays where CURRENT_TIMESTAMP - time > INTERVAL '24 hours'"
+        s = "delete from busdelays where CURRENT_TIMESTAMP - time > INTERVAL '12 hours'"
         c = self.engine.connect()
         c.execute(s)
         del c

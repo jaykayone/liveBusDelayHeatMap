@@ -6,7 +6,7 @@ busmap-cron:
   entrypoint:
   - /app/cron.sh
   log_opt: {}
-  image: jaykayone/busmap
+  image: jaykayone/busmap_auto
   links:
   - 'postgis:'
   stdin_open: true
@@ -26,16 +26,16 @@ postgis:
   - /pg_data_bus/:/var/lib/postgresql/data
   stdin_open: true
 busmap:
-  ports:
-  - 8081:80/tcp
   log_driver: ''
   labels:
     io.rancher.container.pull_image: always
   tty: true
   log_opt: {}
-  image: jaykayone/busmap
+  image: jaykayone/busmap_auto
   links:
   - 'postgis:'
+  labels:
+  - rap.host=busmap.konnen.lu
   stdin_open: true
   environment:
     TZ: Europe/Luxembourg

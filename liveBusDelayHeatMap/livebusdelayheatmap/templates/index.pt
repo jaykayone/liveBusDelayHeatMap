@@ -13,7 +13,7 @@
         height: 100%;
         }
     </style>
-    <link rel="stylesheet" href="http://openlayers.org/en/v3.15.1/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="//openlayers.org/en/v3.15.1/css/ol.css" type="text/css">
     <script src="//openlayers.org/en/v3.15.1/build/ol.js"></script>
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -102,7 +102,7 @@
                 extent: projectionExtent,
                 visible: true,
                 source: new ol.source.WMTS({
-                    url: 'http://wmts1.geoportail.lu/opendata/wmts/{Layer}/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png',
+                    url: '//wmts1.geoportail.lu/opendata/wmts/{Layer}/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png',
                     layer: 'basemap',
                     matrixSet: 'GLOBAL_WEBMERCATOR_4_V3',
                     requestEncoding: /** @type {ol.source.WMTSRequestEncoding} */ ('REST'),
